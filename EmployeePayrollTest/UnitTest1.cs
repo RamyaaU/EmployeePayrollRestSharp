@@ -52,7 +52,7 @@ namespace EmployeePayrollTest
             //get 
             List<Employee> employeeList = JsonConvert.DeserializeObject<List<Employee>>(response.Content);
             //checking whether list is equal to count
-            Assert.AreEqual(5, employeeList.Count);
+            Assert.AreEqual(4, employeeList.Count);
 
             foreach (Employee emp in employeeList)
             {
