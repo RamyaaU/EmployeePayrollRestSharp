@@ -38,26 +38,28 @@ namespace EmployeePayrollTest
         }
 
         /// <summary>
-        /// UC 1 : Retrieve all employee details in the json file
+        /// UC 2 : Add new employee to the json file in JSON server and return the same
         /// </summary>
         [TestMethod]
-        public void OnCallingGetAPI_ReturnEmployeeList()
+        public void OnCallingPostAPI_ReturnEmployeeObject()
         {
-            //calling the method
-            IRestResponse response = GetEmployeeList();
-            //checks if the status code of response equals the employee code for the method requested
-            //and checks response as okay or not
-            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-            //convert the response object to list of employees
-            //get 
-            List<Employee> employeeList = JsonConvert.DeserializeObject<List<Employee>>(response.Content);
-            //checking whether list is equal to count
-            Assert.AreEqual(5, employeeList.Count);
+            //Arrange
+            //Initialize the request for POST to add new employee
+            RestRequest request = new RestRequest("/employees/list", Method.POST);
+            JsonObject jsonObj = new JsonObject();
+            jsonObj.Add("name", "Raj");
+            jsonObj.Add("salary", "7140");
+            jsonObj.Add("id", "4");
 
-            foreach (Employee emp in employeeList)
-            {
-                Console.WriteLine("Id: " + emp.Id + "\t" + "Name: " + emp.Name + "\t" + "Salary: " + emp.Salary);
-            }
+            //Act
+            IRestResponse response = client.Execute(request);
+
+            //Assert
+            Assert.AreEqual(HttpStatusCode.Created, response.StatusCode);
+            Employee employee = JsonConvert.DeserializeObject<Employee>(response.Content);
+            Assert.AreEqual("Raj", employee.Name);
+            Assert.AreEqual("7140", employee.Salary);
+            Console.WriteLine(response.Content);
         }
     }
 }
