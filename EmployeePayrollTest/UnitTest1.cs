@@ -38,26 +38,39 @@ namespace EmployeePayrollTest
         }
 
         /// <summary>
-        /// UC 1 : Retrieve all employee details in the json file
+        /// UC 3 : Adds multiple employees to the json file in JSON server and returns the same
         /// </summary>
         [TestMethod]
-        public void OnCallingGetAPI_ReturnEmployeeList()
+        public void OnCallingPostAPIForAEmployeeListWithMultipleEMployees_ReturnEmployeeObject()
         {
-            //calling the method
-            IRestResponse response = GetEmployeeList();
-            //checks if the status code of response equals the employee code for the method requested
-            //and checks response as okay or not
-            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-            //convert the response object to list of employees
-            //get 
-            List<Employee> employeeList = JsonConvert.DeserializeObject<List<Employee>>(response.Content);
-            //checking whether list is equal to count
-            Assert.AreEqual(5, employeeList.Count);
-
-            foreach (Employee emp in employeeList)
+            // Arrange
+            List<Employee> employeeList = new List<Employee>();
+            employeeList.Add(new Employee { Name = "Kylie ", Salary = "885040" });
+            employeeList.Add(new Employee { Name = "Kendall ", Salary = "125030" });
+            employeeList.Add(new Employee { Name = "Kim ", Salary = "125040" });
+            //Iterate the loop for each employee
+            foreach (var v in employeeList)
             {
-                Console.WriteLine("Id: " + emp.Id + "\t" + "Name: " + emp.Name + "\t" + "Salary: " + emp.Salary);
+                //Initialize the request for POST to add new employee
+                RestRequest request = new RestRequest("/Employees/list", Method.POST);
+                JsonObject jsonObj = new JsonObject();
+                jsonObj.Add("Name", v.Name);
+                jsonObj.Add("Salary", v.Salary);
+                // jsonObj.Add("Id", v.Id);
+                //Added parameters to the request object such as the content-type and attaching the jsonObj with the request
+                request.AddParameter("application/json", jsonObj, ParameterType.RequestBody);
+
+                //Act
+                IRestResponse response = client.Execute(request);
+
+                //Assert
+                Assert.AreEqual(HttpStatusCode.Created, response.StatusCode);
+                Employee employee = JsonConvert.DeserializeObject<Employee>(response.Content);
+                Assert.AreEqual(v.Name, employee.Name);
+                Assert.AreEqual(v.Salary, employee.Salary);
+                Console.WriteLine(response.Content);
             }
         }
     }
 }
+
