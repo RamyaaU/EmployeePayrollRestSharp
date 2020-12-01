@@ -38,26 +38,29 @@ namespace EmployeePayrollTest
         }
 
         /// <summary>
-        /// UC 1 : Retrieve all employee details in the json file
+        /// UC 4 : Update the salary into the json file in json server
         /// </summary>
         [TestMethod]
-        public void OnCallingGetAPI_ReturnEmployeeList()
+        public void OnCallingPutAPI_ReturnEmployeeObject()
         {
-            //calling the method
-            IRestResponse response = GetEmployeeList();
-            //checks if the status code of response equals the employee code for the method requested
-            //and checks response as okay or not
-            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-            //convert the response object to list of employees
-            //get 
-            List<Employee> employeeList = JsonConvert.DeserializeObject<List<Employee>>(response.Content);
-            //checking whether list is equal to count
-            Assert.AreEqual(5, employeeList.Count);
+            //Arrange
+            //Initialize the request for PUT to add new employee
+            RestRequest request = new RestRequest("/employees/3", Method.PUT);
+            JsonObject jsonObj = new JsonObject();
+            jsonObj.Add("name", "Lisa");
+            jsonObj.Add("salary", "95000");
+            //Added parameters to the request object such as the content-type and attaching the jsonObj with the request
+            request.AddParameter("application/json", jsonObj, ParameterType.RequestBody);
 
-            foreach (Employee emp in employeeList)
-            {
-                Console.WriteLine("Id: " + emp.Id + "\t" + "Name: " + emp.Name + "\t" + "Salary: " + emp.Salary);
-            }
+            //Act
+            IRestResponse response = client.Execute(request);
+
+            //Assert
+            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+            Employee employee = JsonConvert.DeserializeObject<Employee>(response.Content);
+            Assert.AreEqual("Lisa", employee.Name);
+            Assert.AreEqual("95000", employee.Salary);
+            Console.WriteLine(response.Content);
         }
     }
 }
