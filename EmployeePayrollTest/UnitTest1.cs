@@ -52,7 +52,7 @@ namespace EmployeePayrollTest
             foreach (var v in employeeList)
             {
                 //Initialize the request for POST to add new employee
-                RestRequest request = new RestRequest("/Employees/list", Method.POST);
+                RestRequest request = new RestRequest("/employees/list", Method.POST);
                 JsonObject jsonObj = new JsonObject();
                 jsonObj.Add("Name", v.Name);
                 jsonObj.Add("Salary", v.Salary);
